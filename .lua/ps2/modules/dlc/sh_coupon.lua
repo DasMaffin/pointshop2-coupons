@@ -8,7 +8,7 @@ Pointshop2.RegisterModule( MODULE )
 MODULE.Blueprints = {
     {
         label = "Coupon",
-        base = "base_coupon",
+        base = "sh_base_coupon",
         icon = "pointshop2/crime1.png",
         creator = "DCouponCreator",
         tooltip = "Create Coupons"
