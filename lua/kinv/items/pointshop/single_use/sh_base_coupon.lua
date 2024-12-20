@@ -12,9 +12,6 @@ end
 function ITEM.static.generateFromPersistence( itemTable, persistence )
     -- Call the parent's generateFromPersistence to populate default  fields such as name, price, description.
     ITEM.super.generateFromPersistence( itemTable, persistence.ItemPersistence )
-	print("-----------------------------------Generating from persistence-----------------------------------")
-	print(persistence.multiplier)
-	PrintTable(persistence)
     -- Set the class properties from the persistence
     ITEM.multiplier = persistence.multiplier
 end
