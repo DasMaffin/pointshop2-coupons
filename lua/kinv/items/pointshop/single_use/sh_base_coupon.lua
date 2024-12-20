@@ -76,11 +76,11 @@ hook.Add("PlayerInitialSpawn", "SetDefaultDiscountedValue", function(ply)
     ply:SetNWBool("Discounted", false)
 end)
 
-function ITEM:OnUse( )
+function ITEM:OnUse( ply )
 	-- Save the original method for fallback if needed
 	local originalBuyItem = Pointshop2Controller.buyItem
 	local originalCanAffordSV = Player.PS2_CanAfford
-
+	self:GetOwner():SetNWBool("Discounted", false)
 	function Pointshop2Controller:buyItem( ply, itemClassName, currencyType )
 		return self:isValidPurchase( ply, itemClassName )
 		:Then( function( )
