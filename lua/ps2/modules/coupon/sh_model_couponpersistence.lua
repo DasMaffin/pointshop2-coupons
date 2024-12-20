@@ -1,21 +1,20 @@
 -- Define the class
-Pointshop2.LowGravityPersistence = class( "Pointshop2.LowGravityPersistence" )
-local LowGravityPersistence = Pointshop2.LowGravityPersistence 
+Pointshop2.CouponPersistence = class( "Pointshop2.CouponPersistence" )
+local CouponPersistence = Pointshop2.CouponPersistence 
 
 -- Link to the Pointshop2 Database
-LowGravityPersistence.static.DB = "Pointshop2"
+CouponPersistence.static.DB = "Pointshop2"
 
 -- Define model fields
-LowGravityPersistence.static.model = {
+CouponPersistence.static.model = {
     -- Name of the SQL Table
-    tableName = "ps2_lowgravitypersistence",
+    tableName = "ps2_couponpersistence",
 
     -- Table columns:
     fields = {
         -- Foreign key, needed to link to the basic item info row
         itemPersistenceId = "int",
 
-        -- Our gravity multiplier
         multiplier = "luadata",
     },
 
@@ -30,10 +29,10 @@ LowGravityPersistence.static.model = {
 }
 
 -- Include Database Logic (creating tables, adding accessor functions)
-LowGravityPersistence:include( DatabaseModel )
+CouponPersistence:include( DatabaseModel )
 
 -- Include EasyExport: Makes it possible to import/export the item
-LowGravityPersistence:include( Pointshop2.EasyExport )
+CouponPersistence:include( Pointshop2.EasyExport )
 
 --[[
     Called by the Item Creator to update or create a persistence.
@@ -42,24 +41,24 @@ LowGravityPersistence:include( Pointshop2.EasyExport )
     - doUpdate: A boolean, true if we are updating an item, false if 
                 creating it.
 ]]--
-function LowGravityPersistence.static.createOrUpdateFromSaveTable( saveTable, doUpdate )
+function CouponPersistence.static.createOrUpdateFromSaveTable( saveTable, doUpdate )
     -- call the base item createOrUpdateFromSaveTable to save basic item info (description, name, price, etc.) 
     return Pointshop2.ItemPersistence.createOrUpdateFromSaveTable( saveTable, doUpdate )
     :Then( function( itemPersistence )
         if doUpdate then
             -- Find the database row to update
-            return LowGravityPersistence.findByItemPersistenceId( itemPersistence.id )
+            return CouponPersistence.findByItemPersistenceId( itemPersistence.id )
         else
             -- Create a new database row
-            local weaponPersistence = LowGravityPersistence:new( )
+            local weaponPersistence = CouponPersistence:new( )
             -- link the basic item info
             weaponPersistence.itemPersistenceId = itemPersistence.id
             return weaponPersistence
         end
     end )
-    :Then( function( lowGravPersistence )
+    :Then( function( couponPersistence )
         -- Set our custom properties
-        lowGravPersistence.multiplier = saveTable.multiplier
-        return lowGravPersistence:save( )
+        couponPersistence.multiplier = saveTable.multiplier
+        return couponPersistence:save( )
     end )
 end
