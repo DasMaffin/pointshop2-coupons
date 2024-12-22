@@ -7,7 +7,7 @@ MODULE.Blueprints = {
     {
         label = "Coupon",
         base = "base_coupon",
-        icon = "pointshop2/crime1.png",
+        icon = "pointshop2/coupon.png",
         creator = "DCouponCreator",
         tooltip = "Create coupons."
     }
