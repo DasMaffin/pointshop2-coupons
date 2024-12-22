@@ -25,7 +25,7 @@ function ITEM:CanBeUsed( )
 	return true
 end
 
-function OnUseCl(itemClass)
+function ITEM:OnUseCl()
 	local originalCanAffordCL = Player.PS2_CanAfford
 
 	function Player:PS2_CanAfford(itemClass)
@@ -68,7 +68,7 @@ function OnUseCl(itemClass)
 	end)
 end
 
-function OnUseSv( ply )
+function ITEM:OnUseSv()
 	-- Save the original method for fallback if needed
 	local originalBuyItem = Pointshop2Controller.buyItem
 	local originalCanAffordSV = Player.PS2_CanAfford
@@ -128,11 +128,12 @@ function OnUseSv( ply )
 
 		return false
 	end
+	
 end
 
 local originalUseButtonClicked = ITEM.UseButtonClicked
-function ITEM:UseButtonClicked( itemClass )
-	self:OnUseCl(itemClass)
+function ITEM:UseButtonClicked()
+	self:OnUseCl()
 
 	return originalUseButtonClicked( self )
 end
@@ -141,10 +142,11 @@ hook.Add("PlayerInitialSpawn", "SetDefaultDiscountedValue", function(ply)
     ply:SetNWBool("Discounted", false)
 end)
 
-function ITEM:OnUse( ply )
-	Coupons.ActiveCoupons[ply:SteamID()] = self
+function ITEM:OnUse()
+	Coupons.ActiveCoupons[self:GetOwner():SteamID64()] = self
+	Coupons.saveUsedCoupons()
 
-	self:OnUseSv(ply)
+	self:OnUseSv(ply)	
 
 	print("[Pointshop Discount] Successfully applied " .. ITEM.multiplier .. "% discount to internalBuyItem!")
 end
