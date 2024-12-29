@@ -1,6 +1,6 @@
 ITEM.baseClass = "base_single_use"
 ITEM.multiplier = 80
-ITEM.material = "pointshop2/user19.png"
+ITEM.material = "pointshop2/coupon.png"
 
 local Player = FindMetaTable( "Player" )
 local pricePanel
@@ -62,8 +62,9 @@ function ITEM:OnUseCl()
 		panel.buttonsPanel:Reset( )
 	
 		price = item:GetBuyPrice( LocalPlayer( ))
-		price.points = price.points * ((100 - ITEM.multiplier) / 100)
-	
+		if price.points then
+			price.points = price.points * ((100 - ITEM.multiplier) / 100)
+		end
 		panel.buttonsPanel:AddBuyButtons( price )
 	end)
 end
