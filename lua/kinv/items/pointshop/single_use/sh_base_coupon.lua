@@ -25,7 +25,9 @@ function ITEM:CanBeUsed( )
 	return true
 end
 
-function ITEM:OnUseCl()
+local originalUseButtonClicked = ITEM.UseButtonClicked
+
+function ITEM:UseButtonClicked( itemClass )
 	local originalCanAffordCL = Player.PS2_CanAfford
 
 	function Player:PS2_CanAfford(itemClass)
@@ -34,7 +36,7 @@ function ITEM:OnUseCl()
 		end
 		local price = itemClass:GetBuyPrice()
 		if price.points then
-			price.points = price.points * ((100 - ITEM.multiplier) / 100)
+			price.points = math.ceil(price.points * ((100 - ITEM.multiplier) / 100))
 		end
 		local wallet = self:PS2_GetWallet()
 		if not wallet or not price then
@@ -63,13 +65,19 @@ function ITEM:OnUseCl()
 	
 		price = item:GetBuyPrice( LocalPlayer( ))
 		if price.points then
-			price.points = price.points * ((100 - ITEM.multiplier) / 100)
+			price.points = math.ceil(price.points * ((100 - ITEM.multiplier) / 100))
 		end
 		panel.buttonsPanel:AddBuyButtons( price )
 	end)
+
+	return originalUseButtonClicked( self )
 end
 
-function ITEM:OnUseSv()
+hook.Add("PlayerInitialSpawn", "SetDefaultDiscountedValue", function(ply)
+    ply:SetNWBool("Discounted", false)
+end)
+
+function ITEM:OnUse( ply )
 	-- Save the original method for fallback if needed
 	local originalBuyItem = Pointshop2Controller.buyItem
 	local originalCanAffordSV = Player.PS2_CanAfford
@@ -84,8 +92,9 @@ function ITEM:OnUseSv()
 				KLogf( 3, "Player %s tried to buy item %s which cannot be bought! Hacking Attempt?", ply:Nick(), itemClass )
 				return Promise.Reject( "Item %s cannot be bought!" )
 			end
+			
 			if price.points then
-				price.points = price.points * ((100 - ITEM.multiplier) / 100)
+				price.points = math.ceil(price.points * ((100 - ITEM.multiplier) / 100))
 			end
 	
 			if currencyType == "points" and price.points and ply.PS2_Wallet.points < price.points  or
@@ -112,7 +121,7 @@ function ITEM:OnUseSv()
 	function Player:PS2_CanAfford(itemClass)
 		local price = itemClass:GetBuyPrice()
 		if price.points then
-			price.points = price.points * ((100 - ITEM.multiplier) / 100)
+			price.points = math.ceil(price.points * ((100 - ITEM.multiplier) / 100))
 		end
 		local wallet = self:PS2_GetWallet()
 		if not wallet or not price then
@@ -129,25 +138,7 @@ function ITEM:OnUseSv()
 
 		return false
 	end
-	
-end
-
-local originalUseButtonClicked = ITEM.UseButtonClicked
-function ITEM:UseButtonClicked()
-	self:OnUseCl()
-
-	return originalUseButtonClicked( self )
-end
-
-hook.Add("PlayerInitialSpawn", "SetDefaultDiscountedValue", function(ply)
-    ply:SetNWBool("Discounted", false)
-end)
-
-function ITEM:OnUse()
-	Coupons.ActiveCoupons[self:GetOwner():SteamID64()] = self
-	Coupons.saveUsedCoupons()
-
-	self:OnUseSv(ply)	
 
 	print("[Pointshop Discount] Successfully applied " .. ITEM.multiplier .. "% discount to internalBuyItem!")
 end
+
